@@ -402,14 +402,21 @@ static int cl_strout(char const *pszStr, int iSize, void *pPrivate)
 																													 
 static int cl_stdout(char const *pszStr, int iSize, void *pPrivate)
 {
+	int iRet = 0;
+	int iWritten = 0;
+	unsigned int uOffset = 0;
+
 	while (iSize)
 	{
-		cl_putchar(*pszStr);
-		iSize--;
-		pszStr++;
+		iWritten = cl_write(pszStr + uOffset, iSize);
+		if (iWritten < 0)
+			return -1;
+		iSize -= iWritten;
+		uOffset += iWritten;
+		iRet += iWritten;
 	}
 
-	return 0;
+	return iRet;
 }
 																													 
 int cl_vsprintf(char *pszBuffer, int iSize, char const *pszFmt, va_list Args)
@@ -520,4 +527,18 @@ void cl_printhex(unsigned char uNum)
 
 	cl_putchar(szHex[(uNum >> 4) & 0x0f]);
 	cl_putchar(szHex[uNum & 0x0f]);
+}
+
+int cl_putchar(int c)
+{
+	char ch = (char)c;
+	cl_write(&ch, sizeof(ch));
+	return c;
+}
+
+int cl_getchar()
+{
+	char c = 0;
+	cl_read(&c, sizeof(c));
+	return c;
 }
