@@ -49,12 +49,12 @@ malloc/free functions are available, you can simply compile with CL_HAS_MALLOC d
 ## Porting to new system
 There are only 4 functions in the 'ClPort.c' file that might need to be changed to start using the library in your environment.
 
-    int cl_putchar(int c);
-    int cl_getchar();
+    int cl_read(char *buf, unsigned int count);
+    int cl_write(const char *buf, unsigned int count);
     void *cl_mem_alloc(unsigned int uSize);
     void cl_mem_free(void *pAddr);
 
 Basically, all you need to do is:
-1. Reimplement the cl_putchar/cl_getchar to work on your device.
+1. Reimplement the cl_read/cl_write to work on your device.
 2. If you already have a dynamic memory allocation mechanism you can reimplement cl_mem_alloc/cl_mem_free. If you don't you can just initialize its own heap allocator as shown in the Example 1. If you have access malloc/free all you need to do is compile with "#define CL_HAS_MALLOC". When CL_HAS_MALLOC is defined cl_mem_init() is not availabe, you should look at example 2 how to use the library in that case.
 
