@@ -1,7 +1,6 @@
-# cl
+# Command Line
 Command Line (CL) library - providing line edit functionality for bare metal systems.
 
-By Martin Stoilov
 
 A minimal, zero-config, GPL licensed, readline replacement.
 
@@ -59,7 +58,3 @@ Basically, all you need to do is:
 1. Reimplement the cl_putchar/cl_getchar to work on your device.
 2. If you already have a dynamic memory allocation mechanism you can reimplement cl_mem_alloc/cl_mem_free. If you don't you can just initialize its own heap allocator as shown in the Example 1. If you have access malloc/free all you need to do is compile with "#define CL_HAS_MALLOC". When CL_HAS_MALLOC is defined cl_mem_init() is not availabe, you should look at example 2 how to use the library in that case.
 
-## Suggestions and patches
-You can send to mXXXXn.stoilov at gmail
-
-Hint: XXXX above must be replaced.
