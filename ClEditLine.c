@@ -24,6 +24,27 @@
 #include "ClString.h"
 #include "ClEditLine.h"
 
+enum SPECIAL_KEYS {
+	CTRL_A = 1,         /* Ctrl-a */
+	CTRL_B = 2,         /* Ctrl-b */
+	CTRL_C = 3,         /* Ctrl-c */
+	CTRL_D = 4,         /* Ctrl-d */
+	CTRL_E = 5,         /* Ctrl-e */
+	CTRL_F = 6,         /* Ctrl-f */
+	CTRL_H = 8,         /* Ctrl-h */
+	TAB = 9,            /* Tab */
+	CTRL_K = 11,        /* Ctrl-k */
+	CTRL_L = 12,        /* Ctrl-l */
+	ENTER = 13,         /* Enter */
+	CTRL_N = 14,        /* Ctrl-n */
+	CTRL_P = 16,        /* Ctrl-p */
+	CTRL_T = 20,        /* Ctrl-t */
+	CTRL_U = 21,        /* Ctrl-u */
+	CTRL_W = 23,        /* Ctrl-w */
+	ESC = 27,           /* Escape */
+	BACKSPACE =  127    /* Backspace */
+};
+
 
 typedef struct tagSLEDITLINE
 {
@@ -141,16 +162,10 @@ static int cl_term_cursor_col()
 	int repeat = 5;
 
 	cl_printf("\033[6n");
-	while (repeat--)
-	{
-		if ((c = cl_getchar()) == 27)
-			break;
-		if (c != '\r' && c != '\n')
-			return 0;
-	}
+	while (((c = cl_getchar()) != 27) && repeat)
+		--repeat;
 	if (c != 27)
 		return 0;
-
 	if (cl_getchar() == '[')
 	{
 		for(;;)
@@ -420,7 +435,6 @@ void cl_term_disable_wrap()
 	cl_printf("\033[?7l");
 }
 
-
 int cl_editline(const char *pszPrompt, char *pszBuffer, unsigned int uBufferSize, unsigned int uHistoryEntries)
 {
 	SLEDITLINE EL;
@@ -515,15 +529,26 @@ int cl_editline(const char *pszPrompt, char *pszBuffer, unsigned int uBufferSize
 				}
 			}
 			break;
-		case 127:
-		case 8: /* Backspace */
+		case BACKSPACE:
+		case CTRL_H: /* Backspace */
 			cl_editline_back_key(&EL);
 			break;
-		case 9:	/* Tab - insert 4 spaces*/
-			cl_editline_insert_char(&EL, ' ');
-			cl_editline_insert_char(&EL, ' ');
-			cl_editline_insert_char(&EL, ' ');
-			cl_editline_insert_char(&EL, ' ');
+		case TAB:
+			break;
+		case CTRL_A: /* Home */
+			cl_editline_home_key(&EL);
+			break;
+		case CTRL_E: /* End */
+			cl_editline_end_key(&EL);
+			break;
+		case CTRL_D: /* Del */
+			cl_editline_del_key(&EL);
+			break;
+		case CTRL_B: /* Left */
+			cl_editline_left_key(&EL);
+			break;
+		case CTRL_F: /* Right */
+			cl_editline_right_key(&EL);
 			break;
 		default:
 			cl_editline_insert_char(&EL, iChar);
