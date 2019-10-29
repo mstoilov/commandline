@@ -23,9 +23,12 @@ int main(int argc, char *argv[])
 	 * Switch from canonical to raw mode
 	 */
 	struct termios saved, raw;
-	tcgetattr(0, &saved);
+	tcgetattr(STDIN_FILENO, &saved);
+	tcgetattr(STDIN_FILENO, &raw);
 	cfmakeraw(&raw);
-	tcsetattr(0, TCSANOW, &raw);
+	raw.c_oflag |= OPOST;
+	tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+
 
 	/*
 	 * Enter main loop. To exit type: 'exit' and hit enter.
@@ -40,7 +43,7 @@ int main(int argc, char *argv[])
 	}
 
 exit:
-	tcsetattr(0, TCSANOW, &saved);
+	tcsetattr(STDIN_FILENO, TCSANOW, &saved);
 	printf("\r\n");
 	return 0;
 }
